@@ -9,8 +9,10 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by Leandro Loureiro on 13/11/14.
@@ -19,6 +21,8 @@ import java.util.Map;
 public class AccountsTest extends BaseTest {
 
     private static final Logger LOGGER = LogManager.getLogger(AccountsTest.class);
+    private static final Random RANDOM_GENERATOR = new SecureRandom();
+
 
     private String authToken;
 
@@ -64,6 +68,24 @@ public class AccountsTest extends BaseTest {
             LOGGER.info(String.format("Account currency: %s", account.get("cur")));
             LOGGER.info(String.format("Account type: %s", account.get("type")));
         }
+    }
+
+    @Test
+    public final void CreateAccount() throws Exception {
+
+        LOGGER.info("Creating new account...");
+
+        final Map<String, Object> input = new HashMap<String, Object>();
+        input.put("token", this.authToken);
+        input.put("name", "Sample Account " + Math.abs(RANDOM_GENERATOR.nextInt()));
+        input.put("type", "Current Account");
+        input.put("startBalance", "" + Math.random());
+        input.put("currency", "EUR");
+
+        final HttpResponse response = sendRequest("expenses/add_account", input);
+        Assert.assertEquals(response.getCode(), 200, "Invalid HTTP code!");
+        final JSONObject data = new JSONObject(response.getBody());
+
     }
 
     @AfterClass
