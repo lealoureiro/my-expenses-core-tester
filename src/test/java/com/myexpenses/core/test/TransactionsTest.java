@@ -150,7 +150,7 @@ public class TransactionsTest extends BaseTest {
         input.put("dsc", String.format("Sample Transaction %d", Math.abs(RANDOM_GENERATOR.nextInt())));
         input.put("cat", "Personal");
         input.put("subCat", "Misc");
-        input.put("amt", "" + Math.random());
+        input.put("amt", "" + (1000.0 * Math.random()));
         input.put("timestamp", "" + System.currentTimeMillis());
         input.put("tags", "single,sample");
 
