@@ -1,88 +1,95 @@
 package com.myexpenses.core.test;
 
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.myexpenses.core.test.models.Credentials;
+import com.myexpenses.core.test.models.KeyData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.security.SecureRandom;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
-public final class ConnectivityTest extends BaseTest {
+public final class ConnectivityTest {
 
     private static final Logger LOGGER = LogManager.getLogger(ConnectivityTest.class);
+    private final Credentials credentials = new Credentials(GlobalSettings.TEST_USER, GlobalSettings.TEST_PASSWORD);
 
 
-    private String authToken;
+    private String apiKey;
     private static final Random RANDOM_GENERATOR = new SecureRandom();
 
 
     @Test
-    public final void Login() throws Exception {
+    public final void GetKey() throws Exception {
+        LOGGER.info("Testing GetKey call ...");
 
-        LOGGER.info("Testing Login feature...");
+        final String resource = String.format("http://%s:%s/keys/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final HttpResponse<KeyData> response = Unirest.post(resource)
+                .header("accept", "application/json")
+                .header("Content-type", "application/json")
+                .body(credentials)
+                .asObject(KeyData.class);
 
-        final Map<String, Object> input = new HashMap<String, Object>();
-
-        input.put("username", GlobalSettings.TEST_USER);
-        input.put("password", GlobalSettings.TEST_PASSWORD);
-
-        final HttpResponse response = sendRequest("auth/login", input);
-        Assert.assertEquals(response.getCode(), 200, "Invalid HTTP code!");
-        final JSONObject data = new JSONObject(response.getBody());
-        final String token = data.getString("token");
-        Assert.assertNotNull(token, "Invalid token!");
-        this.authToken = token;
+        final KeyData newKeyData = response.getBody();
+        Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP status code!");
+        LOGGER.info(String.format("Got client ID %s", newKeyData.getClientId()));
+        LOGGER.info(String.format("Got client name %s", newKeyData.getClientName()));
+        LOGGER.info(String.format("Got new key %s", newKeyData.getKey()));
+        this.apiKey = newKeyData.getKey();
     }
 
-    @Test(dependsOnMethods = {"Login"})
+
+    @Test(dependsOnMethods = {"GetKey"})
     public final void ServerEcho() throws Exception {
 
         LOGGER.info("Testing Core Server Echo...");
 
-        final Map<String, Object> input = new HashMap<String, Object>();
         final String randomString = String.format("Server Echo Test %d", RANDOM_GENERATOR.nextInt());
+        final String resource = String.format("http://%s:%s/expenses/echo", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final HttpResponse<JsonNode> response = Unirest.post(resource)
+                .header("accept", "application/json")
+                .field("token", this.apiKey)
+                .field("echo", randomString)
+                .asJson();
 
+        Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
 
-        input.put("token", this.authToken);
-        input.put("echo", randomString);
-
-        final HttpResponse response = sendRequest("expenses/echo", input);
-        Assert.assertEquals(response.getCode(), 200, "Invalid HTTP code!");
-        final JSONObject data = new JSONObject(response.getBody());
-        Assert.assertEquals(data.get("echo"), randomString, "Invalid echo!");
-
+        final JsonNode data = response.getBody();
+        Assert.assertEquals(data.getObject().get("echo"), randomString, "Invalid echo!");
     }
+
 
     @Test(dependsOnMethods = {"ServerEcho"})
-    public final void Logout() throws Exception{
+    public final void DeleteKey() throws Exception {
 
-        LOGGER.info("Testing Logout feature...");
-
-        final Map<String, Object> input = new HashMap<String, Object>();
-
-        input.put("token", this.authToken);
-        final HttpResponse response = sendRequest("auth/logout", input);
-        Assert.assertEquals(response.getCode(), 200, "Invalid HTTP code!");
+        LOGGER.info("Testing Delete Key call ...");
+        final String resource = String.format("http://%s:%s/keys/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final HttpResponse<JsonNode> response = Unirest.delete(resource)
+                .header("authkey", this.apiKey)
+                .asJson();
+        Assert.assertEquals(response.getStatus(), 204, "Invalid HTTP code!");
     }
 
-    @Test(dependsOnMethods = {"Logout"})
-    public final void CheckOutdatedToken() throws Exception{
 
-        LOGGER.info("Testing usage of invalid authentication token...");
+    @Test(dependsOnMethods = {"DeleteKey"})
+    public final void CheckInvalidKey() throws Exception {
 
-        final Map<String, Object> input = new HashMap<String, Object>();
+        LOGGER.info("Testing usage of invalid key...");
 
         final String randomString = String.format("Server Echo Test %d", RANDOM_GENERATOR.nextInt());
-        input.put("token", this.authToken);
-        input.put("echo", randomString);
+        final String resource = String.format("http://%s:%s/expenses/echo", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final HttpResponse<JsonNode> response = Unirest.post(resource)
+                .header("accept", "application/json")
+                .field("token", this.apiKey)
+                .field("echo", randomString)
+                .asJson();
 
-        final HttpResponse response = sendRequest("expenses/echo", input);
-        Assert.assertEquals(response.getCode(), 403, "Invalid HTTP code!");
+        Assert.assertEquals(response.getStatus(), 403, "Invalid HTTP code!");
     }
 
 

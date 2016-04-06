@@ -17,7 +17,7 @@ import java.util.*;
  * Created by Leandro Loureiro on 13/11/14.
  * Version 0.0.1
  */
-public class TransactionsTest extends BaseTest {
+public class TransactionsTest {
 
     private static final Logger LOGGER = LogManager.getLogger(TransactionsTest.class);
     private static final Random RANDOM_GENERATOR = new SecureRandom();
@@ -27,6 +27,7 @@ public class TransactionsTest extends BaseTest {
     private Set<String> categories;
     private Map<String, String> subCategories;
 
+    /*
     @BeforeClass
     public final void Login() throws Exception {
 
@@ -74,12 +75,12 @@ public class TransactionsTest extends BaseTest {
 
         Assert.assertTrue(isUUID(sampleAccountId), "Invalid account ID!");
 
-        LOGGER.info(String.format("Account ID: %s", sampleAccountId));
-        LOGGER.info(String.format("Account name: %s", account.get("name")));
-        LOGGER.info(String.format("Account balance: %.02f", account.getDouble("bal")));
+        LOGGER.info(String.format("Transaction ID: %s", sampleAccountId));
+        LOGGER.info(String.format("Transaction name: %s", account.get("name")));
+        LOGGER.info(String.format("Transaction balance: %.02f", account.getDouble("bal")));
         LOGGER.info(String.format("Start balance: %.02f", account.getDouble("startBal")));
-        LOGGER.info(String.format("Account currency: %s", account.get("cur")));
-        LOGGER.info(String.format("Account type: %s", account.get("type")));
+        LOGGER.info(String.format("Transaction currency: %s", account.get("cur")));
+        LOGGER.info(String.format("Transaction type: %s", account.get("type")));
     }
 
     @Test(dependsOnMethods = "GetSampleAccount")
@@ -170,6 +171,6 @@ public class TransactionsTest extends BaseTest {
             return false;
         }
     }
-
+ */
 
 }
