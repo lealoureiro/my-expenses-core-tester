@@ -5,31 +5,40 @@ package com.myexpenses.core.test.models;
  */
 public class Account {
 
-    private String acct;
+    private String id;
     private String name;
     private String type;
-    private String startBal;
-    private String cur;
-    private String bal;
+    private String balance;
+    private String startBalance;
+    private String currency;
+
 
     public Account() {
 
     }
 
-    public Account(final String acct, final String name, final String type, final String startBal, final String cur, final String bal) {
-        this.acct = acct;
+    public Account(final String name, final String type, final String startBalance, final String currency) {
         this.name = name;
         this.type = type;
-        this.startBal = startBal;
-        this.bal = bal;
+        this.startBalance = startBalance;
+        this.currency = currency;
     }
 
-    public String getAcct() {
-        return acct;
+    public Account(final String id, final String name, final String type, final String startBalance, final String currency, final String balance) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.startBalance = startBalance;
+        this.balance = balance;
+        this.currency = currency;
     }
 
-    public void setAcct(final String acct) {
-        this.acct = acct;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(final String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -48,27 +57,29 @@ public class Account {
         this.type = type;
     }
 
-    public String getStartBal() {
-        return startBal;
+    public String getStartBalance() {
+        return startBalance;
     }
 
-    public void setStartBal(final String startBal) {
-        this.startBal = startBal;
+    public void setStartBalance(final String startBalance) {
+        this.startBalance = startBalance;
     }
 
-    public String getCur() {
-        return cur;
+    public String getBalance() {
+        return balance;
     }
 
-    public void setCur(final String cur) {
-        this.cur = cur;
+    public void setBalance(final String balance) {
+        this.balance = balance;
     }
 
-    public String getBal() {
-        return bal;
+    public String getCurrency() {
+        return currency;
     }
 
-    public void setBal(final String bal) {
-        this.bal = bal;
+    public void setCurrency(final String currency) {
+        this.currency = currency;
     }
+
+
 }

@@ -6,25 +6,25 @@ package com.myexpenses.core.test.models;
 public class Transaction {
 
     private String id;
-    private String desc;
-    private String ctgId;
-    private String subCtgId;
+    private String description;
+    private String categoryId;
+    private String subCategoryId;
     private String datetime;
-    private String amt;
-    private String extRef;
+    private String amount;
+    private String externalReference;
 
     public Transaction() {
 
     }
 
-    public Transaction(String id, String desc, String ctgId, String subCtgId, String datetime, String amt, String extRef) {
+    public Transaction(final String id, final String description, final String categoryId, final String subCategoryId, final String datetime, final String amount, final String externalReference) {
         this.id = id;
-        this.desc = desc;
-        this.ctgId = ctgId;
-        this.subCtgId = subCtgId;
+        this.description = description;
+        this.categoryId = categoryId;
+        this.subCategoryId = subCategoryId;
         this.datetime = datetime;
-        this.amt = amt;
-        this.extRef = extRef;
+        this.amount = amount;
+        this.externalReference = externalReference;
     }
 
     public String getId() {
@@ -35,51 +35,51 @@ public class Transaction {
         this.id = id;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
-    public String getCtgId() {
-        return ctgId;
+    public String getCategoryId() {
+        return categoryId;
     }
 
-    public void setCtgId(String ctgId) {
-        this.ctgId = ctgId;
+    public void setCategoryId(final String categoryId) {
+        this.categoryId = categoryId;
     }
 
-    public String getSubCtgId() {
-        return subCtgId;
+    public String getSubCategoryId() {
+        return subCategoryId;
     }
 
-    public void setSubCtgId(String subCtgId) {
-        this.subCtgId = subCtgId;
+    public void setSubCategoryId(final String subCategoryId) {
+        this.subCategoryId = subCategoryId;
     }
 
     public String getDatetime() {
         return datetime;
     }
 
-    public void setDatetime(String datetime) {
+    public void setDatetime(final String datetime) {
         this.datetime = datetime;
     }
 
-    public String getAmt() {
-        return amt;
+    public String getAmount() {
+        return amount;
     }
 
-    public void setAmt(String amt) {
-        this.amt = amt;
+    public void setAmount(final String amount) {
+        this.amount = amount;
     }
 
-    public String getExtRef() {
-        return extRef;
+    public String getExternalRefernce() {
+        return externalReference;
     }
 
-    public void setExtRef(String extRef) {
-        this.extRef = extRef;
+    public void setExternalReference(final String externalReference) {
+        this.externalReference = externalReference;
     }
 }

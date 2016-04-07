@@ -1,9 +1,9 @@
 package com.myexpenses.core.test;
 
 import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.myexpenses.core.test.models.Account;
-import com.myexpenses.core.test.models.Transaction;
 import com.myexpenses.core.test.models.Credentials;
 import com.myexpenses.core.test.models.KeyData;
 import org.apache.logging.log4j.LogManager;
@@ -51,7 +51,6 @@ public class AccountsTest {
 
         LOGGER.info("Getting user accounts...");
 
-
         final String resource = String.format("http://%s:%s/expenses/get_accounts", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
         final HttpResponse<Account[]> response = Unirest.post(resource)
                 .field("token", this.apiKey)
@@ -63,41 +62,35 @@ public class AccountsTest {
 
         for (int i = 0; i < accounts.length; i++) {
             LOGGER.info(String.format("Account %d:", i));
-            LOGGER.info(String.format("Account ID: %s", accounts[i].getAcct()));
-            LOGGER.info(String.format("Account name: %s", accounts[i].getName()));
-            LOGGER.info(String.format("Account balance: %s", accounts[i].getBal()));
-            LOGGER.info(String.format("Account Start balance: %s", accounts[i].getStartBal()));
-            LOGGER.info(String.format("Account currency: %s", accounts[i].getCur()));
-            LOGGER.info(String.format("Account type: %s", accounts[i].getType()));
+            LOGGER.info(String.format("Account ID: %s", accounts[i].getId()));
+            LOGGER.info(String.format("Account Name: %s", accounts[i].getName()));
+            LOGGER.info(String.format("Account Balance: %s", accounts[i].getBalance()));
+            LOGGER.info(String.format("Account Start balance: %s", accounts[i].getStartBalance()));
+            LOGGER.info(String.format("Account Currency: %s", accounts[i].getCurrency()));
+            LOGGER.info(String.format("Account Type: %s", accounts[i].getType()));
         }
     }
 
-    /*
+
     @Test
     public final void CreateAccount() throws Exception {
 
         LOGGER.info("Creating new account...");
 
-        final Map<String, Object> input = new HashMap<String, Object>();
-        input.put("token", this.authToken);
-        input.put("name", "Sample Transaction " + Math.abs(RANDOM_GENERATOR.nextInt()));
-        input.put("type", "Current Transaction");
-        input.put("startBalance", "" + Math.random());
-        input.put("currency", "EUR");
+        final String accountName = String.format("Sample Account %d", Math.abs(RANDOM_GENERATOR.nextInt()));
+        final Account account = new Account(accountName, "current Account", "" + Math.random(), "EUR");
 
-        final HttpResponse response = sendRequest("expenses/add_account", input);
-        Assert.assertEquals(response.getCode(), 200, "Invalid HTTP code!");
-        final JSONObject data = new JSONObject(response.getBody());
+        final String resource = String.format("http://%s:%s/expenses/add_account", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        HttpResponse<JsonNode> response = Unirest.post(resource)
+                .header("accept", "application/json")
+                .field("token", this.apiKey)
+                .field("name", account.getName())
+                .field("type", account.getType())
+                .field("startBalance", account.getStartBalance())
+                .field("currency", account.getCurrency())
+                .asJson();
+
+        Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
 
     }
-
-    @AfterClass
-    public final void Logout() throws Exception {
-        final Map<String, Object> input = new HashMap<String, Object>();
-
-        input.put("token", this.authToken);
-        final HttpResponse response = sendRequest("auth/logout", input);
-        Assert.assertEquals(response.getCode(), 200, "Invalid HTTP code!");
-    }
- */
 }

@@ -1,12 +1,15 @@
 package com.myexpenses.core.test;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.myexpenses.core.test.models.Account;
+import com.myexpenses.core.test.models.Credentials;
+import com.myexpenses.core.test.models.KeyData;
+import com.myexpenses.core.test.models.Transaction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.testng.Assert;
-import org.testng.SkipException;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -22,35 +25,30 @@ public class TransactionsTest {
     private static final Logger LOGGER = LogManager.getLogger(TransactionsTest.class);
     private static final Random RANDOM_GENERATOR = new SecureRandom();
 
-    private String authToken;
+    private final Credentials credentials = new Credentials(GlobalSettings.TEST_USER, GlobalSettings.TEST_PASSWORD);
+
+    private String apiKey;
     private String sampleAccountId;
-    private Set<String> categories;
-    private Map<String, String> subCategories;
 
-    /*
+
     @BeforeClass
-    public final void Login() throws Exception {
+    public final void GetKey() throws Exception {
 
-        final Map<String, Object> input = new HashMap<String, Object>();
+        LOGGER.info("Getting Key to start the tests...");
 
-        input.put("username", GlobalSettings.TEST_USER);
-        input.put("password", GlobalSettings.TEST_PASSWORD);
+        final String resource = String.format("http://%s:%s/keys/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final HttpResponse<KeyData> response = Unirest.post(resource)
+                .header("accept", "application/json")
+                .header("Content-type", "application/json")
+                .body(credentials)
+                .asObject(KeyData.class);
 
-        final HttpResponse response = sendRequest("auth/login", input);
-        Assert.assertEquals(response.getCode(), 200, "Invalid HTTP code!");
-        final JSONObject data = new JSONObject(response.getBody());
-        final String token = data.getString("token");
-        Assert.assertNotNull(token, "Invalid token!");
-        this.authToken = token;
-    }
-
-    @AfterClass
-    public final void Logout() throws Exception {
-        final Map<String, Object> input = new HashMap<String, Object>();
-
-        input.put("token", this.authToken);
-        final HttpResponse response = sendRequest("auth/logout", input);
-        Assert.assertEquals(response.getCode(), 200, "Invalid HTTP code!");
+        final KeyData newKeyData = response.getBody();
+        Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP status code!");
+        LOGGER.info(String.format("Got client ID %s", newKeyData.getClientId()));
+        LOGGER.info(String.format("Got client name %s", newKeyData.getClientName()));
+        LOGGER.info(String.format("Got new key %s", newKeyData.getKey()));
+        this.apiKey = newKeyData.getKey();
     }
 
 
@@ -59,109 +57,70 @@ public class TransactionsTest {
 
         LOGGER.info("Getting sample account...");
 
-        final Map<String, Object> input = new HashMap<String, Object>();
-        input.put("token", this.authToken);
+        final String resource = String.format("http://%s:%s/expenses/get_accounts", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final HttpResponse<Account[]> response = Unirest.post(resource)
+                .field("token", this.apiKey)
+                .asObject(Account[].class);
 
-        final HttpResponse response = sendRequest("expenses/get_accounts", input);
-        Assert.assertEquals(response.getCode(), 200, "Invalid HTTP code!");
-        final JSONArray data = new JSONArray(response.getBody());
+        Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
 
-        if (data.length() == 0) {
-            throw new SkipException("No accounts found!");
-        }
+        final Account[] accounts = response.getBody();
+        final Account account = accounts[RANDOM_GENERATOR.nextInt(accounts.length)];
 
-        final JSONObject account = (JSONObject) data.get(RANDOM_GENERATOR.nextInt(data.length()));
-        sampleAccountId = account.getString("acct");
+        Assert.assertTrue(isUUID(account.getId()), "Invalid account ID!");
+        sampleAccountId = account.getId();
 
-        Assert.assertTrue(isUUID(sampleAccountId), "Invalid account ID!");
-
-        LOGGER.info(String.format("Transaction ID: %s", sampleAccountId));
-        LOGGER.info(String.format("Transaction name: %s", account.get("name")));
-        LOGGER.info(String.format("Transaction balance: %.02f", account.getDouble("bal")));
-        LOGGER.info(String.format("Start balance: %.02f", account.getDouble("startBal")));
-        LOGGER.info(String.format("Transaction currency: %s", account.get("cur")));
-        LOGGER.info(String.format("Transaction type: %s", account.get("type")));
+        LOGGER.info(String.format("Account ID: %s", sampleAccountId));
+        LOGGER.info(String.format("Account Name: %s", account.getName()));
+        LOGGER.info(String.format("Account Balance: %s", account.getBalance()));
+        LOGGER.info(String.format("Account Start Balance: %s", account.getStartBalance()));
+        LOGGER.info(String.format("Account Currency: %s", account.getCurrency()));
+        LOGGER.info(String.format("Account Type: %s", account.getType()));
     }
+
 
     @Test(dependsOnMethods = "GetSampleAccount")
     public final void GetAccountTransactions() throws Exception {
 
         LOGGER.info(String.format("Getting transactions for account %s ...", this.sampleAccountId));
 
-        final Map<String, Object> input = new HashMap<String, Object>();
-        input.put("token", this.authToken);
-        input.put("acct", this.sampleAccountId);
+        final String resource = String.format("http://%s:%s/expenses/get_transactions", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final HttpResponse<Transaction[]> response = Unirest.post(resource)
+                .field("token", apiKey)
+                .field("account", sampleAccountId)
+                .asObject(Transaction[].class);
 
-        final HttpResponse response = sendRequest("expenses/get_transactions", input);
-        Assert.assertEquals(response.getCode(), 200, "Invalid HTTP code!");
-        final JSONArray data = new JSONArray(response.getBody());
-        LOGGER.info(String.format("Fetched %d transactions", data.length()));
+        Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
+        final Transaction[] transactions = response.getBody();
+        LOGGER.info(String.format("Fetched %d transactions", transactions.length));
     }
 
-    @Test
-    public final void GetCategories() throws Exception {
-
-        LOGGER.info("Getting Categories and Sub Categories...");
-
-        final Map<String, Object> input = new HashMap<String, Object>();
-        input.put("token", this.authToken);
-
-        final HttpResponse response = sendRequest("expenses/get_categories", input);
-        Assert.assertEquals(response.getCode(), 200, "Invalid HTTP code!");
-        final JSONObject data = new JSONObject(response.getBody());
-
-        final JSONArray categories = (JSONArray) data.get("Categories");
-        final JSONArray subCategories = (JSONArray) data.get("SubCategories");
-        LOGGER.info(String.format("Fetched %d categories", categories.length()));
-        LOGGER.info(String.format("Fetched %d sub categories", subCategories.length()));
-
-
-        this.categories = new HashSet<String>();
-        this.subCategories = new LinkedHashMap<String, String>();
-
-        for (int i = 0; i < categories.length(); i++) {
-            final JSONObject category = categories.getJSONObject(i);
-            this.categories.add(category.getString("name"));
-        }
-
-        for (int i = 0; i < subCategories.length(); i++) {
-            final JSONObject subCategory = subCategories.getJSONObject(i);
-            this.subCategories.put(subCategory.getString("subCat"), subCategory.getString("cat"));
-        }
-
-        LOGGER.info("Categories fetched:");
-        for (String s : this.categories) {
-            LOGGER.info(s);
-        }
-
-        LOGGER.info("Sub Categories fetched:");
-        for (Map.Entry<String, String> e : this.subCategories.entrySet()) {
-            LOGGER.info(String.format("%s - %s", e.getKey(), e.getValue()));
-        }
-
-    }
 
     @Test(dependsOnMethods = "GetSampleAccount")
-    public final void AddSingleTransaction() throws Exception {
-        LOGGER.info("Adding sample transaction...");
+    public final void AddTransactions() throws Exception {
+        LOGGER.info("Adding transaction test...");
 
-        final Map<String, Object> input = new HashMap<String, Object>();
-        input.put("token", this.authToken);
-        input.put("acct", this.sampleAccountId);
-        input.put("dsc", String.format("Sample Transaction %d", Math.abs(RANDOM_GENERATOR.nextInt())));
-        input.put("cat", "Personal");
-        input.put("subCat", "Misc");
-        input.put("amt", "" + (1000.0 * Math.random()));
-        input.put("timestamp", "" + System.currentTimeMillis());
-        input.put("tags", "single,sample");
 
-        final HttpResponse response = sendRequest("expenses/add_transaction", input);
-        Assert.assertEquals(response.getCode(), 200, "Invalid HTTP code!");
-        final JSONObject data = new JSONObject(response.getBody());
+        final String resource = String.format("http://%s:%s/expenses/add_transaction", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final HttpResponse<JsonNode> response = Unirest.post(resource)
+                .header("accept", "application/json")
+                .field("token", this.apiKey)
+                .field("account", this.sampleAccountId)
+                .field("description", String.format("Sample Transaction %d", Math.abs(RANDOM_GENERATOR.nextInt())))
+                .field("category", "Personal")
+                .field("amount", "" + (1000.0 * Math.random()))
+                .field("subCategory", "Misc")
+                .field("timestamp", "" + System.currentTimeMillis())
+                .field("tags", "single,sample")
+                .asJson();
 
+        Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
+
+        final JsonNode data = response.getBody();
+        final String transactionId = data.getObject().get("transactionId").toString();
+        Assert.assertTrue(isUUID(transactionId), "Invalid Transaction ID!");
 
     }
-
 
     private static boolean isUUID(String string) {
         try {
@@ -171,6 +130,6 @@ public class TransactionsTest {
             return false;
         }
     }
- */
+
 
 }
