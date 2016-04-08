@@ -51,9 +51,9 @@ public class AccountsTest {
 
         LOGGER.info("Getting user accounts...");
 
-        final String resource = String.format("http://%s:%s/expenses/get_accounts", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
-        final HttpResponse<Account[]> response = Unirest.post(resource)
-                .field("token", this.apiKey)
+        final String resource = String.format("http://%s:%s/accounts/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final HttpResponse<Account[]> response = Unirest.get(resource)
+                .header("authkey", this.apiKey)
                 .asObject(Account[].class);
 
         Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
@@ -64,7 +64,6 @@ public class AccountsTest {
             LOGGER.info(String.format("Account %d:", i));
             LOGGER.info(String.format("Account ID: %s", accounts[i].getId()));
             LOGGER.info(String.format("Account Name: %s", accounts[i].getName()));
-            LOGGER.info(String.format("Account Balance: %s", accounts[i].getBalance()));
             LOGGER.info(String.format("Account Start balance: %s", accounts[i].getStartBalance()));
             LOGGER.info(String.format("Account Currency: %s", accounts[i].getCurrency()));
             LOGGER.info(String.format("Account Type: %s", accounts[i].getType()));
