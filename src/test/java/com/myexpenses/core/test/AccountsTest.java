@@ -77,16 +77,14 @@ public class AccountsTest {
         LOGGER.info("Creating new account...");
 
         final String accountName = String.format("Sample Account %d", Math.abs(RANDOM_GENERATOR.nextInt()));
-        final Account account = new Account(accountName, "current Account", "" + Math.random(), "EUR");
+        final Account account = new Account(accountName, "current Account", Math.random(), "EUR");
 
-        final String resource = String.format("http://%s:%s/expenses/add_account", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final String resource = String.format("http://%s:%s/accounts/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
         HttpResponse<JsonNode> response = Unirest.post(resource)
                 .header("accept", "application/json")
-                .field("token", this.apiKey)
-                .field("name", account.getName())
-                .field("type", account.getType())
-                .field("startBalance", account.getStartBalance())
-                .field("currency", account.getCurrency())
+                .header("Content-type", "application/json")
+                .header("authkey", this.apiKey)
+                .body(account)
                 .asJson();
 
         Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");

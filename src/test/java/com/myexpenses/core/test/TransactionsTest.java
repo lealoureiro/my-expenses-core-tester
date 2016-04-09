@@ -10,6 +10,7 @@ import com.myexpenses.core.test.models.Transaction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -65,6 +66,10 @@ public class TransactionsTest {
         Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
 
         final Account[] accounts = response.getBody();
+        if (accounts.length == 0) {
+            throw new SkipException("No accounts found to execute test!");
+        }
+
         final Account account = accounts[RANDOM_GENERATOR.nextInt(accounts.length)];
 
         Assert.assertTrue(isUUID(account.getId()), "Invalid account ID!");

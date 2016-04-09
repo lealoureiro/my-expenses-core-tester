@@ -43,28 +43,7 @@ public final class ConnectivityTest {
         this.apiKey = newKeyData.getKey();
     }
 
-
     @Test(dependsOnMethods = {"GetKey"})
-    public final void ServerEcho() throws Exception {
-
-        LOGGER.info("Testing Core Server Echo...");
-
-        final String randomString = String.format("Server Echo Test %d", RANDOM_GENERATOR.nextInt());
-        final String resource = String.format("http://%s:%s/expenses/echo", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
-        final HttpResponse<JsonNode> response = Unirest.post(resource)
-                .header("accept", "application/json")
-                .field("token", this.apiKey)
-                .field("echo", randomString)
-                .asJson();
-
-        Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
-
-        final JsonNode data = response.getBody();
-        Assert.assertEquals(data.getObject().get("echo"), randomString, "Invalid echo!");
-    }
-
-
-    @Test(dependsOnMethods = {"ServerEcho"})
     public final void DeleteKey() throws Exception {
 
         LOGGER.info("Testing Delete Key call ...");
