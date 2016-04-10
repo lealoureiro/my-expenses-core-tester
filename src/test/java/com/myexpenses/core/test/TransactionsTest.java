@@ -89,10 +89,9 @@ public class TransactionsTest {
 
         LOGGER.info(String.format("Getting transactions for account %s ...", this.sampleAccountId));
 
-        final String resource = String.format("http://%s:%s/expenses/get_transactions", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
-        final HttpResponse<Transaction[]> response = Unirest.post(resource)
-                .field("token", apiKey)
-                .field("account", sampleAccountId)
+        final String resource = String.format("http://%s:%s/accounts/%s/transactions/", GlobalSettings.HOSTNAME, GlobalSettings.PORT, this.sampleAccountId);
+        final HttpResponse<Transaction[]> response = Unirest.get(resource)
+                .header("authkey", apiKey)
                 .asObject(Transaction[].class);
 
         Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
