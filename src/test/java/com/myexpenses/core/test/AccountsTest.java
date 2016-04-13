@@ -68,6 +68,7 @@ public class AccountsTest {
             LOGGER.info(String.format("Account Currency: %s", accounts[i].getCurrency()));
             LOGGER.info(String.format("Account Type: %s", accounts[i].getType()));
         }
+        LOGGER.info(String.format("Fetched %d accounts", accounts.length));
     }
 
 

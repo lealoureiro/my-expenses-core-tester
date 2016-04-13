@@ -104,24 +104,22 @@ public class TransactionsTest {
     public final void AddTransactions() throws Exception {
         LOGGER.info("Adding transaction test...");
 
+        final String description = String.format("Sample Transaction %d", Math.abs(RANDOM_GENERATOR.nextInt()));
 
-        final String resource = String.format("http://%s:%s/expenses/add_transaction", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final Transaction transaction = new Transaction(description, "Personal", "Misc", System.currentTimeMillis(), 1000.0 * Math.random(), "single,sample");
+
+        final String resource = String.format("http://%s:%s/accounts/%s/transactions", GlobalSettings.HOSTNAME, GlobalSettings.PORT, this.sampleAccountId);
         final HttpResponse<JsonNode> response = Unirest.post(resource)
                 .header("accept", "application/json")
-                .field("token", this.apiKey)
-                .field("account", this.sampleAccountId)
-                .field("description", String.format("Sample Transaction %d", Math.abs(RANDOM_GENERATOR.nextInt())))
-                .field("category", "Personal")
-                .field("amount", "" + (1000.0 * Math.random()))
-                .field("subCategory", "Misc")
-                .field("timestamp", "" + System.currentTimeMillis())
-                .field("tags", "single,sample")
+                .header("Content-type", "application/json")
+                .header("authkey", this.apiKey)
+                .body(transaction)
                 .asJson();
 
         Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
 
         final JsonNode data = response.getBody();
-        final String transactionId = data.getObject().get("transactionId").toString();
+        final String transactionId = data.getObject().get("id").toString();
         Assert.assertTrue(isUUID(transactionId), "Invalid Transaction ID!");
 
     }

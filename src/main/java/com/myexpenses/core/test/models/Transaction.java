@@ -7,24 +7,34 @@ public class Transaction {
 
     private String id;
     private String description;
-    private String categoryId;
-    private String subCategoryId;
-    private String datetime;
-    private String amount;
+    private String category;
+    private String subCategory;
+    private long timestamp;
+    private double amount;
     private String externalReference;
+    private String tags;
 
     public Transaction() {
 
     }
 
-    public Transaction(final String id, final String description, final String categoryId, final String subCategoryId, final String datetime, final String amount, final String externalReference) {
+    public Transaction(final String id, final String description, final String category, final String subCategory, final long timestamp, final double amount, final String externalReference) {
         this.id = id;
         this.description = description;
-        this.categoryId = categoryId;
-        this.subCategoryId = subCategoryId;
-        this.datetime = datetime;
+        this.category = category;
+        this.subCategory = subCategory;
+        this.timestamp = timestamp;
         this.amount = amount;
         this.externalReference = externalReference;
+    }
+
+    public Transaction(final String description, final String category, final String subCategory, final long timestamp, final double amount, final String tags) {
+        this.description = description;
+        this.category = category;
+        this.subCategory = subCategory;
+        this.timestamp = timestamp;
+        this.amount = amount;
+        this.tags = tags;
     }
 
     public String getId() {
@@ -43,35 +53,35 @@ public class Transaction {
         this.description = description;
     }
 
-    public String getCategoryId() {
-        return categoryId;
+    public String getCategory() {
+        return category;
     }
 
-    public void setCategoryId(final String categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(final String category) {
+        this.category = category;
     }
 
-    public String getSubCategoryId() {
-        return subCategoryId;
+    public String getSubCategory() {
+        return subCategory;
     }
 
-    public void setSubCategoryId(final String subCategoryId) {
-        this.subCategoryId = subCategoryId;
+    public void setSubCategory(final String subCategoryId) {
+        this.subCategory = subCategory;
     }
 
-    public String getDatetime() {
-        return datetime;
+    public long getTimestamp() {
+        return timestamp;
     }
 
-    public void setDatetime(final String datetime) {
-        this.datetime = datetime;
+    public void setTimestamp(final long timestamp) {
+        this.timestamp = timestamp;
     }
 
-    public String getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(final String amount) {
+    public void setAmount(final double amount) {
         this.amount = amount;
     }
 
@@ -81,5 +91,13 @@ public class Transaction {
 
     public void setExternalReference(final String externalReference) {
         this.externalReference = externalReference;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(final String tags) {
+        this.tags = tags;
     }
 }
