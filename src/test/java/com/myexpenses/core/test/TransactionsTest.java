@@ -121,7 +121,7 @@ public class TransactionsTest {
         final JsonNode data = response.getBody();
         final String transactionId = data.getObject().get("id").toString();
         Assert.assertTrue(isUUID(transactionId), "Invalid Transaction ID!");
-
+        LOGGER.info(String.format("Transaction %s added to account %s", transactionId, this.sampleAccountId));
     }
 
     private static boolean isUUID(String string) {
