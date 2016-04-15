@@ -55,21 +55,4 @@ public final class ConnectivityTest {
     }
 
 
-    @Test(dependsOnMethods = {"DeleteKey"})
-    public final void CheckInvalidKey() throws Exception {
-
-        LOGGER.info("Testing usage of invalid key...");
-
-        final String randomString = String.format("Server Echo Test %d", RANDOM_GENERATOR.nextInt());
-        final String resource = String.format("http://%s:%s/expenses/echo", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
-        final HttpResponse<JsonNode> response = Unirest.post(resource)
-                .header("accept", "application/json")
-                .field("token", this.apiKey)
-                .field("echo", randomString)
-                .asJson();
-
-        Assert.assertEquals(response.getStatus(), 403, "Invalid HTTP code!");
-    }
-
-
 }
