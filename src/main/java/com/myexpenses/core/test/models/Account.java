@@ -1,5 +1,8 @@
 package com.myexpenses.core.test.models;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * Created by leandro on 4/7/16.
  */
@@ -8,30 +11,21 @@ public class Account {
     private String id;
     private String name;
     private String type;
-    private double balance;
-    private double startBalance;
+    private Double balance;
+    private Double startBalance;
     private String currency;
-
 
     public Account() {
 
     }
 
-    public Account(final String name, final String type, final double startBalance, final String currency) {
+    public Account(final String name, final String type, final Double startBalance, final String currency) {
         this.name = name;
         this.type = type;
-        this.startBalance = startBalance;
+        this.startBalance = new BigDecimal(startBalance).setScale(2, RoundingMode.FLOOR).doubleValue();
         this.currency = currency;
     }
 
-    public Account(final String id, final String name, final String type, final double startBalance, final String currency, final double balance) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-        this.startBalance = startBalance;
-        this.balance = balance;
-        this.currency = currency;
-    }
 
     public String getId() {
         return id;
@@ -57,20 +51,20 @@ public class Account {
         this.type = type;
     }
 
-    public double getStartBalance() {
+    public Double getStartBalance() {
         return startBalance;
     }
 
-    public void setStartBalance(final double startBalance) {
+    public void setStartBalance(final Double startBalance) {
         this.startBalance = startBalance;
     }
 
-    public double getBalance() {
+    public Double getBalance() {
         return balance;
     }
 
-    public void setBalance(final double balance) {
-        this.balance = balance;
+    public void setBalance(final Double balance) {
+        this.balance = new BigDecimal(balance).setScale(2, RoundingMode.FLOOR).doubleValue();
     }
 
     public String getCurrency() {

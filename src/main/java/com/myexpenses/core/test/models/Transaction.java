@@ -1,5 +1,8 @@
 package com.myexpenses.core.test.models;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * Created by leandro on 4/7/16.
  */
@@ -10,7 +13,7 @@ public class Transaction {
     private String category;
     private String subCategory;
     private long timestamp;
-    private double amount;
+    private Double amount;
     private String externalReference;
     private String tags;
 
@@ -18,22 +21,12 @@ public class Transaction {
 
     }
 
-    public Transaction(final String id, final String description, final String category, final String subCategory, final long timestamp, final double amount, final String externalReference) {
-        this.id = id;
+    public Transaction(final String description, final String category, final String subCategory, final long timestamp, final Double amount, final String tags) {
         this.description = description;
         this.category = category;
         this.subCategory = subCategory;
         this.timestamp = timestamp;
-        this.amount = amount;
-        this.externalReference = externalReference;
-    }
-
-    public Transaction(final String description, final String category, final String subCategory, final long timestamp, final double amount, final String tags) {
-        this.description = description;
-        this.category = category;
-        this.subCategory = subCategory;
-        this.timestamp = timestamp;
-        this.amount = amount;
+        this.amount = new BigDecimal(amount).setScale(2, RoundingMode.FLOOR).doubleValue();
         this.tags = tags;
     }
 
@@ -77,12 +70,12 @@ public class Transaction {
         this.timestamp = timestamp;
     }
 
-    public double getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(final double amount) {
-        this.amount = amount;
+    public void setAmount(final Double amount) {
+        this.amount = new BigDecimal(amount).setScale(2, RoundingMode.FLOOR).doubleValue();
     }
 
     public String getExternalRefernce() {
