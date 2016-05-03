@@ -11,17 +11,12 @@ import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.security.SecureRandom;
-import java.util.Random;
-
 public final class ConnectivityTest {
 
     private static final Logger LOGGER = LogManager.getLogger(ConnectivityTest.class);
     private final Credentials credentials = new Credentials(GlobalSettings.TEST_USER, GlobalSettings.TEST_PASSWORD);
 
-
     private String apiKey;
-    private static final Random RANDOM_GENERATOR = new SecureRandom();
 
 
     @Test
@@ -53,6 +48,5 @@ public final class ConnectivityTest {
                 .asJson();
         Assert.assertEquals(response.getStatus(), 204, "Invalid HTTP code!");
     }
-
 
 }
