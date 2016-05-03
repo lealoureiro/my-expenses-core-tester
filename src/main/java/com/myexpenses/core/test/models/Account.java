@@ -14,6 +14,7 @@ public class Account {
     private Double balance;
     private Double startBalance;
     private String currency;
+    private Integer transactions;
 
     public Account() {
 
@@ -75,5 +76,11 @@ public class Account {
         this.currency = currency;
     }
 
+    public Integer getTransactions() {
+        return transactions;
+    }
 
+    public void setTransactions(final Integer transactions) {
+        this.transactions = transactions;
+    }
 }

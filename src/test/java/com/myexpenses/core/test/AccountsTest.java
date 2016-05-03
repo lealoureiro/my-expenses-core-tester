@@ -14,6 +14,7 @@ import org.testng.annotations.Test;
 
 import java.security.SecureRandom;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Created by Leandro Loureiro on 13/11/14.
@@ -26,6 +27,7 @@ public class AccountsTest {
 
     private final Credentials credentials = new Credentials(GlobalSettings.TEST_USER, GlobalSettings.TEST_PASSWORD);
     private String apiKey;
+    private String sampleAccountId;
 
     @BeforeClass
     public final void GetKey() throws Exception {
@@ -69,6 +71,10 @@ public class AccountsTest {
             LOGGER.info(String.format("Account Type: %s", accounts[i].getType()));
         }
         LOGGER.info(String.format("Fetched %d accounts", accounts.length));
+
+        final Account account = accounts[RANDOM_GENERATOR.nextInt(accounts.length)];
+        Assert.assertTrue(isUUID(account.getId()), "Invalid account ID!");
+        sampleAccountId = account.getId();
     }
 
 
@@ -89,6 +95,33 @@ public class AccountsTest {
                 .asJson();
 
         Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
+    }
 
+    @Test(dependsOnMethods = "GetUserAccounts")
+    public void GetSampleAccountInformation() throws Exception {
+
+        final String resource = String.format("http://%s:%s/accounts/%s", GlobalSettings.HOSTNAME, GlobalSettings.PORT, this.sampleAccountId);
+        final HttpResponse<Account> response = Unirest.get(resource)
+                .header("authkey", this.apiKey)
+                .asObject(Account.class);
+
+        Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
+
+        final Account account = response.getBody();
+        LOGGER.info(String.format("Account ID: %s", account.getId()));
+        LOGGER.info(String.format("Account Name: %s", account.getName()));
+        LOGGER.info(String.format("Account Start balance: %s", account.getStartBalance()));
+        LOGGER.info(String.format("Account balance: %s", account.getBalance()));
+        LOGGER.info(String.format("Account Currency: %s", account.getCurrency()));
+        LOGGER.info(String.format("Account Type: %s", account.getType()));
+    }
+
+    private static boolean isUUID(String string) {
+        try {
+            UUID.fromString(string);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 }
