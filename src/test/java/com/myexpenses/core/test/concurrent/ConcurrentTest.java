@@ -46,7 +46,7 @@ public class ConcurrentTest {
         final int transactionsNumber = ThreadLocalRandom.current().nextInt(0, 200);
         final List<Transaction> transactions = new ArrayList<Transaction>(transactionsNumber);
 
-        Long total = 0l;
+        Long total = 0L;
         for (int i = 0; i < transactionsNumber; i++) {
             final String description = String.format("Transaction %d", i);
             final Long transactionAmount = ThreadLocalRandom.current().nextLong(-10000, 10000);
@@ -73,7 +73,7 @@ public class ConcurrentTest {
         Assert.assertEquals(account.getBalance(), resultAccount.getBalance(), String.format("Account %s invalid balance!", account.getId()));
     }
 
-    public String getAccessKey(final Credentials credentials) throws Exception {
+    private String getAccessKey(final Credentials credentials) throws Exception {
         LOGGER.info("Getting access key to proceed with test");
 
         final String resource = String.format("http://%s:%s/keys/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
