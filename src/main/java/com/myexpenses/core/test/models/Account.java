@@ -11,8 +11,8 @@ public class Account {
     private String id;
     private String name;
     private String type;
-    private Double balance;
-    private Double startBalance;
+    private Long balance;
+    private Long startBalance;
     private String currency;
     private Integer transactions;
 
@@ -20,10 +20,10 @@ public class Account {
 
     }
 
-    public Account(final String name, final String type, final Double startBalance, final String currency) {
+    public Account(final String name, final String type, final Long startBalance, final String currency) {
         this.name = name;
         this.type = type;
-        this.startBalance = new BigDecimal(startBalance).setScale(2, RoundingMode.FLOOR).doubleValue();
+        this.startBalance = startBalance;
         this.currency = currency;
     }
 
@@ -52,20 +52,20 @@ public class Account {
         this.type = type;
     }
 
-    public Double getStartBalance() {
+    public Long getStartBalance() {
         return startBalance;
     }
 
-    public void setStartBalance(final Double startBalance) {
+    public void setStartBalance(final Long startBalance) {
         this.startBalance = startBalance;
     }
 
-    public Double getBalance() {
+    public Long getBalance() {
         return balance;
     }
 
-    public void setBalance(final Double balance) {
-        this.balance = new BigDecimal(balance).setScale(2, RoundingMode.FLOOR).doubleValue();
+    public void setBalance(final Long balance) {
+        this.balance = balance;
     }
 
     public String getCurrency() {

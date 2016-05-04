@@ -78,7 +78,7 @@ public class TransactionsTest {
         LOGGER.info(String.format("Account ID: %s", sampleAccountId));
         LOGGER.info(String.format("Account Name: %s", account.getName()));
         LOGGER.info(String.format("Account Balance: %s", account.getBalance()));
-        LOGGER.info(String.format("Account Start Balance: %s", account.getStartBalance()));
+        LOGGER.info(String.format("Account Start Balance: %.02f", account.getStartBalance() / 100.0));
         LOGGER.info(String.format("Account Currency: %s", account.getCurrency()));
         LOGGER.info(String.format("Account Type: %s", account.getType()));
     }
@@ -105,8 +105,8 @@ public class TransactionsTest {
         LOGGER.info("Adding transaction test...");
 
         final String description = String.format("Sample Transaction %d", Math.abs(RANDOM_GENERATOR.nextInt()));
-
-        final Transaction transaction = new Transaction(description, "Personal", "Misc", System.currentTimeMillis(), 1000.0 * Math.random(), "single,sample");
+        final Long amount = RANDOM_GENERATOR.nextLong() % 10000;
+        final Transaction transaction = new Transaction(description, "Personal", "Misc", System.currentTimeMillis(), amount, "single,sample");
 
         final String resource = String.format("http://%s:%s/accounts/%s/transactions", GlobalSettings.HOSTNAME, GlobalSettings.PORT, this.sampleAccountId);
         final HttpResponse<JsonNode> response = Unirest.post(resource)

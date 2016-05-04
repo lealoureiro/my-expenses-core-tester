@@ -66,7 +66,7 @@ public class AccountsTest {
             LOGGER.info(String.format("Account %d:", i));
             LOGGER.info(String.format("Account ID: %s", accounts[i].getId()));
             LOGGER.info(String.format("Account Name: %s", accounts[i].getName()));
-            LOGGER.info(String.format("Account Start balance: %s", accounts[i].getStartBalance()));
+            LOGGER.info(String.format("Account Start balance: %.02f", accounts[i].getStartBalance() / 100.0));
             LOGGER.info(String.format("Account Currency: %s", accounts[i].getCurrency()));
             LOGGER.info(String.format("Account Type: %s", accounts[i].getType()));
         }
@@ -84,7 +84,8 @@ public class AccountsTest {
         LOGGER.info("Creating new account...");
 
         final String accountName = String.format("Sample Account %d", Math.abs(RANDOM_GENERATOR.nextInt()));
-        final Account account = new Account(accountName, "current Account", Math.random(), "EUR");
+        final Long startBalance = Math.abs(RANDOM_GENERATOR.nextLong() % 100000);
+        final Account account = new Account(accountName, "current Account", startBalance, "EUR");
 
         final String resource = String.format("http://%s:%s/accounts/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
         HttpResponse<JsonNode> response = Unirest.post(resource)
@@ -110,8 +111,8 @@ public class AccountsTest {
         final Account account = response.getBody();
         LOGGER.info(String.format("Account ID: %s", account.getId()));
         LOGGER.info(String.format("Account Name: %s", account.getName()));
-        LOGGER.info(String.format("Account Start balance: %s", account.getStartBalance()));
-        LOGGER.info(String.format("Account balance: %s", account.getBalance()));
+        LOGGER.info(String.format("Account Start balance: %.02f", account.getStartBalance() / 100.0));
+        LOGGER.info(String.format("Account balance: %.02f", account.getBalance() / 100.0));
         LOGGER.info(String.format("Account Currency: %s", account.getCurrency()));
         LOGGER.info(String.format("Account Type: %s", account.getType()));
     }

@@ -13,7 +13,7 @@ public class Transaction {
     private String category;
     private String subCategory;
     private long timestamp;
-    private Double amount;
+    private Long amount;
     private String externalReference;
     private String tags;
 
@@ -21,12 +21,12 @@ public class Transaction {
 
     }
 
-    public Transaction(final String description, final String category, final String subCategory, final long timestamp, final Double amount, final String tags) {
+    public Transaction(final String description, final String category, final String subCategory, final long timestamp, final Long amount, final String tags) {
         this.description = description;
         this.category = category;
         this.subCategory = subCategory;
         this.timestamp = timestamp;
-        this.amount = new BigDecimal(amount).setScale(2, RoundingMode.FLOOR).doubleValue();
+        this.amount = amount;
         this.tags = tags;
     }
 
@@ -70,12 +70,12 @@ public class Transaction {
         this.timestamp = timestamp;
     }
 
-    public Double getAmount() {
+    public Long getAmount() {
         return amount;
     }
 
-    public void setAmount(final Double amount) {
-        this.amount = new BigDecimal(amount).setScale(2, RoundingMode.FLOOR).doubleValue();
+    public void setAmount(final Long amount) {
+        this.amount = amount;
     }
 
     public String getExternalRefernce() {
