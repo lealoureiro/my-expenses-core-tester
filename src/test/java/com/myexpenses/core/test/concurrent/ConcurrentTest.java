@@ -62,6 +62,7 @@ public class ConcurrentTest {
 
         for (final Transaction transaction : transactions) {
             addTransaction(transaction, account.getId(), key);
+            Thread.sleep(500);
         }
 
         final Account resultAccount = getAccountInformation(account.getId(), key);
@@ -76,9 +77,9 @@ public class ConcurrentTest {
     private String getAccessKey(final Credentials credentials) throws Exception {
         LOGGER.info("Getting access key to proceed with test");
 
-        final String resource = String.format("http://%s:%s/keys/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final String resource = String.format("%s/keys/", GlobalSettings.SERVER);
         final HttpResponse<KeyData> response = Unirest.post(resource)
-                .header("accept", "application/json")
+                .header("Accept", "application/json")
                 .header("Content-type", "application/json")
                 .body(credentials)
                 .asObject(KeyData.class);
@@ -91,9 +92,9 @@ public class ConcurrentTest {
 
     private String addAccount(final Account account, final String key) throws Exception {
 
-        final String resource = String.format("http://%s:%s/accounts/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final String resource = String.format("%s/accounts/", GlobalSettings.SERVER);
         HttpResponse<JsonNode> response = Unirest.post(resource)
-                .header("accept", "application/json")
+                .header("Accept", "application/json")
                 .header("Content-type", "application/json")
                 .header("authkey", key)
                 .body(account)
@@ -108,9 +109,9 @@ public class ConcurrentTest {
     }
 
     private String addTransaction(final Transaction transaction, final String accountId, final String key) throws Exception {
-        final String resource = String.format("http://%s:%s/accounts/%s/transactions", GlobalSettings.HOSTNAME, GlobalSettings.PORT, accountId);
+        final String resource = String.format("%s/accounts/%s/transactions/", GlobalSettings.SERVER, accountId);
         final HttpResponse<JsonNode> response = Unirest.post(resource)
-                .header("accept", "application/json")
+                .header("Accept", "application/json")
                 .header("Content-type", "application/json")
                 .header("authkey", key)
                 .body(transaction)
@@ -127,8 +128,9 @@ public class ConcurrentTest {
     }
 
     private Account getAccountInformation(final String accountId, final String key) throws Exception {
-        final String resource = String.format("http://%s:%s/accounts/%s", GlobalSettings.HOSTNAME, GlobalSettings.PORT, accountId);
+        final String resource = String.format("%s/accounts/%s", GlobalSettings.SERVER, accountId);
         final HttpResponse<Account> response = Unirest.get(resource)
+                .header("Accept", "application/json")
                 .header("authkey", key)
                 .asObject(Account.class);
 

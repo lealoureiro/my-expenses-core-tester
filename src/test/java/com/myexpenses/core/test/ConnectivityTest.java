@@ -22,10 +22,11 @@ public final class ConnectivityTest {
     @Test
     public final void GetKey() throws Exception {
         LOGGER.info("Testing GetKey call ...");
+        LOGGER.info(String.format("Using server %s", GlobalSettings.SERVER));
 
-        final String resource = String.format("http://%s:%s/keys/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final String resource = String.format("%s/keys/", GlobalSettings.SERVER);
         final HttpResponse<KeyData> response = Unirest.post(resource)
-                .header("accept", "application/json")
+                .header("Accept", "application/json")
                 .header("Content-type", "application/json")
                 .body(credentials)
                 .asObject(KeyData.class);
@@ -40,10 +41,11 @@ public final class ConnectivityTest {
 
     @Test(dependsOnMethods = {"GetKey"})
     public final void DeleteKey() throws Exception {
-
         LOGGER.info("Testing Delete Key call ...");
-        final String resource = String.format("http://%s:%s/keys/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+
+        final String resource = String.format("%s/keys/", GlobalSettings.SERVER);
         final HttpResponse<JsonNode> response = Unirest.delete(resource)
+                .header("Accept", "application/json")
                 .header("authkey", this.apiKey)
                 .asJson();
         Assert.assertEquals(response.getStatus(), 204, "Invalid HTTP code!");

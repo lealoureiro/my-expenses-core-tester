@@ -18,8 +18,7 @@ import java.security.SecureRandom;
 import java.util.*;
 
 /**
- * Created by Leandro Loureiro on 13/11/14.
- * Version 0.0.1
+ * @author Leandro Loureiro
  */
 public class TransactionsTest {
 
@@ -37,7 +36,7 @@ public class TransactionsTest {
 
         LOGGER.info("Getting Key to start the tests...");
 
-        final String resource = String.format("http://%s:%s/keys/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final String resource = String.format("%s/keys/", GlobalSettings.SERVER);
         final HttpResponse<KeyData> response = Unirest.post(resource)
                 .header("accept", "application/json")
                 .header("Content-type", "application/json")
@@ -55,10 +54,9 @@ public class TransactionsTest {
 
     @Test
     public final void GetSampleAccount() throws Exception {
-
         LOGGER.info("Getting sample account...");
 
-        final String resource = String.format("http://%s:%s/accounts/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final String resource = String.format("%s/accounts/", GlobalSettings.SERVER);
         final HttpResponse<Account[]> response = Unirest.get(resource)
                 .header("authkey", this.apiKey)
                 .asObject(Account[].class);
@@ -89,8 +87,9 @@ public class TransactionsTest {
 
         LOGGER.info(String.format("Getting transactions for account %s ...", this.sampleAccountId));
 
-        final String resource = String.format("http://%s:%s/accounts/%s/transactions/", GlobalSettings.HOSTNAME, GlobalSettings.PORT, this.sampleAccountId);
+        final String resource = String.format("%s/accounts/%s/transactions/", GlobalSettings.SERVER, this.sampleAccountId);
         final HttpResponse<Transaction[]> response = Unirest.get(resource)
+                .header("Accept", "application/json")
                 .header("authkey", apiKey)
                 .asObject(Transaction[].class);
 
@@ -108,9 +107,9 @@ public class TransactionsTest {
         final Long amount = RANDOM_GENERATOR.nextLong() % 10000;
         final Transaction transaction = new Transaction(description, "Personal", "Misc", System.currentTimeMillis(), amount, "single,sample");
 
-        final String resource = String.format("http://%s:%s/accounts/%s/transactions", GlobalSettings.HOSTNAME, GlobalSettings.PORT, this.sampleAccountId);
+        final String resource = String.format("%s/accounts/%s/transactions", GlobalSettings.SERVER, this.sampleAccountId);
         final HttpResponse<JsonNode> response = Unirest.post(resource)
-                .header("accept", "application/json")
+                .header("Accept", "application/json")
                 .header("Content-type", "application/json")
                 .header("authkey", this.apiKey)
                 .body(transaction)

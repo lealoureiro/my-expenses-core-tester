@@ -6,20 +6,18 @@ import com.mashape.unirest.http.Unirest;
 import java.io.IOException;
 
 /**
- * Created by Leandro Loureiro on 04/09/14.
+ * @author Leandro Loureiro
  */
 public class GlobalSettings {
 
     public static final String TEST_USER = System.getProperty("test.user");
     public static final String TEST_PASSWORD = System.getProperty("test.password");
-    public static final String HOSTNAME = System.getProperty("test.hostname");
-    public static final String PORT = System.getProperty("test.port");
-
+    public static final String SERVER = System.getProperty("test.server");
 
     static {
         Unirest.setObjectMapper(new ObjectMapper() {
 
-            private com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            private final com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
             public <T> T readValue(final String s, final Class<T> aClass) {
 

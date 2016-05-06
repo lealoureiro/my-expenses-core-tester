@@ -1,10 +1,8 @@
 package com.myexpenses.core.test.models;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 /**
- * Created by leandro on 4/7/16.
+ * @author Leandro Loureiro
  */
 public class Account {
 

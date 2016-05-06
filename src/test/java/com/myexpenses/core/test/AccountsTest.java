@@ -17,8 +17,7 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
- * Created by Leandro Loureiro on 13/11/14.
- * Version 0.0.1
+ * @author Leandro Loureiro
  */
 public class AccountsTest {
 
@@ -32,9 +31,9 @@ public class AccountsTest {
     @BeforeClass
     public final void GetKey() throws Exception {
 
-        final String resource = String.format("http://%s:%s/keys/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final String resource = String.format("%s/keys/", GlobalSettings.SERVER);
         final HttpResponse<KeyData> response = Unirest.post(resource)
-                .header("accept", "application/json")
+                .header("Accept", "application/json")
                 .header("Content-type", "application/json")
                 .body(credentials)
                 .asObject(KeyData.class);
@@ -53,8 +52,9 @@ public class AccountsTest {
 
         LOGGER.info("Getting user accounts...");
 
-        final String resource = String.format("http://%s:%s/accounts/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final String resource = String.format("%s/accounts/", GlobalSettings.SERVER);
         final HttpResponse<Account[]> response = Unirest.get(resource)
+                .header("Accept", "application/json")
                 .header("authkey", this.apiKey)
                 .asObject(Account[].class);
 
@@ -87,9 +87,9 @@ public class AccountsTest {
         final Long startBalance = Math.abs(RANDOM_GENERATOR.nextLong() % 100000);
         final Account account = new Account(accountName, "current Account", startBalance, "EUR");
 
-        final String resource = String.format("http://%s:%s/accounts/", GlobalSettings.HOSTNAME, GlobalSettings.PORT);
+        final String resource = String.format("%s/accounts/", GlobalSettings.SERVER);
         HttpResponse<JsonNode> response = Unirest.post(resource)
-                .header("accept", "application/json")
+                .header("Accept", "application/json")
                 .header("Content-type", "application/json")
                 .header("authkey", this.apiKey)
                 .body(account)
@@ -101,8 +101,9 @@ public class AccountsTest {
     @Test(dependsOnMethods = "GetUserAccounts")
     public void GetSampleAccountInformation() throws Exception {
 
-        final String resource = String.format("http://%s:%s/accounts/%s", GlobalSettings.HOSTNAME, GlobalSettings.PORT, this.sampleAccountId);
+        final String resource = String.format("%s/accounts/%s", GlobalSettings.SERVER, this.sampleAccountId);
         final HttpResponse<Account> response = Unirest.get(resource)
+                .header("Accept", "application/json")
                 .header("authkey", this.apiKey)
                 .asObject(Account.class);
 
