@@ -38,7 +38,7 @@ public class TransactionsTest {
 
         final String resource = String.format("%s/keys/", GlobalSettings.SERVER);
         final HttpResponse<KeyData> response = Unirest.post(resource)
-                .header("accept", "application/json")
+                .header("Accept", "application/json")
                 .header("Content-type", "application/json")
                 .body(credentials)
                 .asObject(KeyData.class);
@@ -58,6 +58,7 @@ public class TransactionsTest {
 
         final String resource = String.format("%s/accounts/", GlobalSettings.SERVER);
         final HttpResponse<Account[]> response = Unirest.get(resource)
+                .header("Accept", "application/json")
                 .header("authkey", this.apiKey)
                 .asObject(Account[].class);
 
@@ -131,6 +132,4 @@ public class TransactionsTest {
             return false;
         }
     }
-
-
 }

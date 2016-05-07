@@ -43,7 +43,7 @@ public class ConcurrentTest {
 
         LOGGER.info(String.format("Account %s added with id %s", account.getName(), account.getId()));
 
-        final int transactionsNumber = ThreadLocalRandom.current().nextInt(0, 200);
+        final int transactionsNumber = ThreadLocalRandom.current().nextInt(0, 100);
         final List<Transaction> transactions = new ArrayList<Transaction>(transactionsNumber);
 
         Long total = 0L;
@@ -62,7 +62,7 @@ public class ConcurrentTest {
 
         for (final Transaction transaction : transactions) {
             addTransaction(transaction, account.getId(), key);
-            Thread.sleep(500);
+            Thread.sleep(ThreadLocalRandom.current().nextLong(500, 1000));
         }
 
         final Account resultAccount = getAccountInformation(account.getId(), key);
