@@ -33,22 +33,8 @@ public class TransactionsTest {
 
     @BeforeClass
     public final void GetKey() throws Exception {
-
         LOGGER.info("Getting Key to start the tests...");
-
-        final String resource = String.format("%s/keys/", GlobalSettings.SERVER);
-        final HttpResponse<KeyData> response = Unirest.post(resource)
-                .header("Accept", "application/json")
-                .header("Content-type", "application/json")
-                .body(credentials)
-                .asObject(KeyData.class);
-
-        final KeyData newKeyData = response.getBody();
-        Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP status code!");
-        LOGGER.info(String.format("Got client ID %s", newKeyData.getClientId()));
-        LOGGER.info(String.format("Got client name %s", newKeyData.getClientName()));
-        LOGGER.info(String.format("Got new key %s", newKeyData.getKey()));
-        this.apiKey = newKeyData.getKey();
+        this.apiKey = TestUtils.getNewKey(this.credentials).getKey();
     }
 
 
