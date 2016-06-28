@@ -10,14 +10,17 @@ import com.myexpenses.core.test.models.SubCategory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Random;
 
 /**
  * @author Leandro Loureiro
+ *
  */
 public class CategoriesTest {
 
@@ -27,8 +30,6 @@ public class CategoriesTest {
     private final Credentials credentials = new Credentials(GlobalSettings.TEST_USER, GlobalSettings.TEST_PASSWORD);
 
     private KeyData apiKey;
-    private String sampleCategory1;
-    private String sampleCategory2;
 
     @BeforeClass
     public final void GetKey() throws Exception {
@@ -43,8 +44,6 @@ public class CategoriesTest {
         final Category[] categories = getCurrentCategories();
         LOGGER.info(String.format("Fetched %d categories", categories.length));
 
-        this.sampleCategory1 = categories[RANDOM_GENERATOR.nextInt(categories.length)].getName();
-        this.sampleCategory2 = categories[RANDOM_GENERATOR.nextInt(categories.length)].getName();
     }
 
     @Test
@@ -75,14 +74,21 @@ public class CategoriesTest {
         Assert.assertTrue(added, "New category not stored!");
     }
 
-    @Test(dependsOnMethods = "TestGetAllCategories")
+    @Test
     public void AddNewSubCategory() throws Exception {
 
-        final String resource = String.format("%s/categories/%s/subcategories/", GlobalSettings.SERVER, this.sampleCategory1);
+        Category[] categories = getCurrentCategories();
+        if (categories.length == 0) {
+            throw new SkipException("Not categories found to perform the test!");
+        }
+
+        final String sampleCategory = categories[RANDOM_GENERATOR.nextInt(categories.length)].getName();
+
+        final String resource = String.format("%s/categories/%s/subcategories/", GlobalSettings.SERVER, sampleCategory);
         final String newSubCategoryName = String.format("Sub Category %d", Math.abs(RANDOM_GENERATOR.nextLong() % 10000));
         final SubCategory newSubCategory = new SubCategory(newSubCategoryName);
 
-        LOGGER.info(String.format("Adding new sub category with name %s to category %s", newSubCategoryName, this.sampleCategory1));
+        LOGGER.info(String.format("Adding new sub category with name %s to category %s", newSubCategoryName, sampleCategory));
 
         final HttpResponse<JsonNode> response = Unirest.post(resource)
                 .header("Content-type", "application/json")
@@ -92,11 +98,11 @@ public class CategoriesTest {
 
         Assert.assertEquals(response.getStatus(), 204, "Invalid HTTP code!");
 
-        final Category[] categories = getCurrentCategories();
+        categories = getCurrentCategories();
         boolean added = false;
 
         for (int i = 0; i < categories.length && !added; i++) {
-            if (this.sampleCategory1.equals((categories[i].getName()))) {
+            if (sampleCategory.equals((categories[i].getName()))) {
                 for (final String subCategory : categories[i].getSubCategories()) {
                     if (newSubCategory.getName().equals(subCategory)) {
                         added = true;
@@ -107,13 +113,18 @@ public class CategoriesTest {
         Assert.assertTrue(added, "New sub category not stored!");
     }
 
-    @Test(dependsOnMethods = "AddNewSubCategory")
+    @Test
     public void DeleteEntireCategory() throws Exception {
 
-        final String resource = String.format("%s/categories/%s", GlobalSettings.SERVER, this.sampleCategory2);
+        Category[] categories = getCurrentCategories();
+        if (categories.length == 0) {
+            throw new SkipException("Not categories found to perform the test!");
+        }
 
-        LOGGER.info(String.format("Deleting entire category %s and its sub categories", this.sampleCategory2));
+        final String sampleCategory = categories[RANDOM_GENERATOR.nextInt(categories.length)].getName();
 
+        final String resource = String.format("%s/categories/%s", GlobalSettings.SERVER, sampleCategory);
+        LOGGER.info(String.format("Deleting entire category %s and its sub categories", sampleCategory));
         HttpResponse<JsonNode> response = Unirest.delete(resource)
                 .header("authkey", this.apiKey.getKey())
                 .asJson();
@@ -125,7 +136,48 @@ public class CategoriesTest {
                 .asJson();
 
         Assert.assertEquals(response.getStatus(), 404, "Invalid HTTP code!");
+    }
 
+    @Test
+    public void DeleteSubCategory() throws Exception {
+
+        Category[] categories = getCurrentCategories();
+        if (categories.length == 0) {
+            throw new SkipException("Not categories found to perform the test!");
+        }
+
+        boolean found = false;
+        int i = 0;
+        do {
+            if (categories[i].getSubCategories().size() > 0) {
+                found = true;
+            } else {
+                i++;
+            }
+        }
+        while (!found && i < categories.length);
+
+        if (!found) {
+            throw new SkipException("No sub categories found to perform the test");
+        }
+
+        final List<String> subCategories = categories[i].getSubCategories();
+        final String sampleCategory = categories[i].getName();
+        final String subCategory = subCategories.get(RANDOM_GENERATOR.nextInt(subCategories.size()));
+
+        final String resource = String.format("%s/categories/%s/subcategories/%s", GlobalSettings.SERVER, sampleCategory, subCategory);
+        LOGGER.info(String.format("Deleting entire category %s and its sub categories", sampleCategory));
+        HttpResponse<JsonNode> response = Unirest.delete(resource)
+                .header("authkey", this.apiKey.getKey())
+                .asJson();
+
+        Assert.assertEquals(response.getStatus(), 204, "Invalid HTTP code!");
+
+        response = Unirest.delete(resource)
+                .header("authkey", this.apiKey.getKey())
+                .asJson();
+
+        Assert.assertEquals(response.getStatus(), 404, "Invalid HTTP code!");
     }
 
     private Category[] getCurrentCategories() throws Exception {
