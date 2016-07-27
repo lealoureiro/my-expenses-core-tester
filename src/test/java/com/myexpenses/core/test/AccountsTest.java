@@ -9,6 +9,7 @@ import com.myexpenses.core.test.models.KeyData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -72,9 +73,13 @@ public class AccountsTest {
         }
         LOGGER.info(String.format("Fetched %d accounts", accounts.length));
 
-        final Account account = accounts[RANDOM_GENERATOR.nextInt(accounts.length)];
-        Assert.assertTrue(isUUID(account.getId()), "Invalid account ID!");
-        sampleAccountId = account.getId();
+        if (accounts.length > 0) {
+            final Account account = accounts[RANDOM_GENERATOR.nextInt(accounts.length)];
+            Assert.assertTrue(isUUID(account.getId()), "Invalid account ID!");
+            sampleAccountId = account.getId();
+        } else {
+            throw new SkipException("No accounts found!");
+        }
     }
 
 
