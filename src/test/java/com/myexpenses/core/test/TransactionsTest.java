@@ -125,10 +125,11 @@ public class TransactionsTest {
 
         LOGGER.info(String.format("Deleting transaction %s from account %s", transaction.getId(), sampleAccountId));
         final String resource = String.format("%s/accounts/%s/transactions/%s", GlobalSettings.SERVER, sampleAccountId, transaction.getId());
-        HttpResponse<JsonNode> response = Unirest.delete(resource)
+        HttpResponse<String> response = Unirest.delete(resource)
                 .header("authkey", apiKey)
+                .header("Content-type", "application/json")
                 .body(new TransactionTimestamp(transaction.getTimestamp()))
-                .asJson();
+                .asString();
 
         Assert.assertEquals(response.getStatus(), 204, "Invalid HTTP code!");
 
@@ -138,8 +139,9 @@ public class TransactionsTest {
 
         response = Unirest.delete(resource)
                 .header("authkey", apiKey)
+                .header("Content-type", "application/json")
                 .body(new TransactionTimestamp(transaction.getTimestamp()))
-                .asJson();
+                .asString();
 
         Assert.assertEquals(response.getStatus(), 404, "Invalid HTTP code!");
     }
