@@ -1,7 +1,6 @@
 package com.myexpenses.core.test;
 
 import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.myexpenses.core.test.models.Category;
 import com.myexpenses.core.test.models.Credentials;
@@ -55,11 +54,11 @@ public class CategoriesTest {
 
         LOGGER.info(String.format("Adding new category with name %s", newCategoryName));
 
-        final HttpResponse<JsonNode> response = Unirest.post(resource)
+        final HttpResponse<String> response = Unirest.post(resource)
                 .header("Content-type", "application/json")
                 .header("authkey", this.apiKey.getKey())
                 .body(newCategory)
-                .asJson();
+                .asString();
 
         Assert.assertEquals(response.getStatus(), 204, "Invalid HTTP code!");
 
@@ -90,11 +89,11 @@ public class CategoriesTest {
 
         LOGGER.info(String.format("Adding new sub category with name %s to category %s", newSubCategoryName, sampleCategory));
 
-        final HttpResponse<JsonNode> response = Unirest.post(resource)
+        final HttpResponse<String> response = Unirest.post(resource)
                 .header("Content-type", "application/json")
                 .header("authkey", this.apiKey.getKey())
                 .body(newSubCategory)
-                .asJson();
+                .asString();
 
         Assert.assertEquals(response.getStatus(), 204, "Invalid HTTP code!");
 
@@ -125,15 +124,15 @@ public class CategoriesTest {
 
         final String resource = String.format("%s/categories/%s", GlobalSettings.SERVER, sampleCategory);
         LOGGER.info(String.format("Deleting entire category %s and its sub categories", sampleCategory));
-        HttpResponse<JsonNode> response = Unirest.delete(resource)
+        HttpResponse<String> response = Unirest.delete(resource)
                 .header("authkey", this.apiKey.getKey())
-                .asJson();
+                .asString();
 
         Assert.assertEquals(response.getStatus(), 204, "Invalid HTTP code!");
 
         response = Unirest.delete(resource)
                 .header("authkey", this.apiKey.getKey())
-                .asJson();
+                .asString();
 
         Assert.assertEquals(response.getStatus(), 404, "Invalid HTTP code!");
     }
@@ -167,15 +166,15 @@ public class CategoriesTest {
 
         final String resource = String.format("%s/categories/%s/subcategories/%s", GlobalSettings.SERVER, sampleCategory, subCategory);
         LOGGER.info(String.format("Deleting entire category %s and its sub categories", sampleCategory));
-        HttpResponse<JsonNode> response = Unirest.delete(resource)
+        HttpResponse<String> response = Unirest.delete(resource)
                 .header("authkey", this.apiKey.getKey())
-                .asJson();
+                .asString();
 
         Assert.assertEquals(response.getStatus(), 204, "Invalid HTTP code!");
 
         response = Unirest.delete(resource)
                 .header("authkey", this.apiKey.getKey())
-                .asJson();
+                .asString();
 
         Assert.assertEquals(response.getStatus(), 404, "Invalid HTTP code!");
     }
