@@ -106,10 +106,10 @@ public class AccountsTest {
     @Test(dependsOnMethods = "GetUserAccounts")
     public void GetSampleAccountInformation() throws Exception {
 
-        final String resource = String.format("%s/accounts/%s", GlobalSettings.SERVER, this.sampleAccountId);
+        final String resource = String.format("%s/accounts/%s", GlobalSettings.SERVER, sampleAccountId);
         final HttpResponse<Account> response = Unirest.get(resource)
                 .header("Accept", "application/json")
-                .header("authkey", this.apiKey)
+                .header("authkey", apiKey)
                 .asObject(Account.class);
 
         Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
