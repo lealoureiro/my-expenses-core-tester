@@ -44,7 +44,7 @@ public class AccountsTest {
         LOGGER.info(String.format("Got client ID %s", newKeyData.getClientId()));
         LOGGER.info(String.format("Got client name %s", newKeyData.getClientName()));
         LOGGER.info(String.format("Got new key %s", newKeyData.getKey()));
-        this.apiKey = newKeyData.getKey();
+        apiKey = newKeyData.getKey();
     }
 
 
@@ -56,7 +56,7 @@ public class AccountsTest {
         final String resource = String.format("%s/accounts/", GlobalSettings.SERVER);
         final HttpResponse<Account[]> response = Unirest.get(resource)
                 .header("Accept", "application/json")
-                .header("authkey", this.apiKey)
+                .header("authkey", apiKey)
                 .asObject(Account[].class);
 
         Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
@@ -96,7 +96,7 @@ public class AccountsTest {
         HttpResponse<JsonNode> response = Unirest.post(resource)
                 .header("Accept", "application/json")
                 .header("Content-type", "application/json")
-                .header("authkey", this.apiKey)
+                .header("authkey", apiKey)
                 .body(account)
                 .asJson();
 
@@ -127,7 +127,7 @@ public class AccountsTest {
         try {
             UUID.fromString(string);
             return true;
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             return false;
         }
     }

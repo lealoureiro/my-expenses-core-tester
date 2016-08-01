@@ -19,7 +19,6 @@ import java.util.Random;
 
 /**
  * @author Leandro Loureiro
- *
  */
 public class CategoriesTest {
 
@@ -33,7 +32,7 @@ public class CategoriesTest {
     @BeforeClass
     public final void GetKey() throws Exception {
         LOGGER.info("Getting Key to start the tests...");
-        this.apiKey = TestUtils.getNewKey(this.credentials);
+        apiKey = TestUtils.getNewKey(credentials);
     }
 
     @Test
@@ -56,7 +55,7 @@ public class CategoriesTest {
 
         final HttpResponse<String> response = Unirest.post(resource)
                 .header("Content-type", "application/json")
-                .header("authkey", this.apiKey.getKey())
+                .header("authkey", apiKey.getKey())
                 .body(newCategory)
                 .asString();
 
@@ -91,7 +90,7 @@ public class CategoriesTest {
 
         final HttpResponse<String> response = Unirest.post(resource)
                 .header("Content-type", "application/json")
-                .header("authkey", this.apiKey.getKey())
+                .header("authkey", apiKey.getKey())
                 .body(newSubCategory)
                 .asString();
 
@@ -125,13 +124,13 @@ public class CategoriesTest {
         final String resource = String.format("%s/categories/%s", GlobalSettings.SERVER, sampleCategory);
         LOGGER.info(String.format("Deleting entire category %s and its sub categories", sampleCategory));
         HttpResponse<String> response = Unirest.delete(resource)
-                .header("authkey", this.apiKey.getKey())
+                .header("authkey", apiKey.getKey())
                 .asString();
 
         Assert.assertEquals(response.getStatus(), 204, "Invalid HTTP code!");
 
         response = Unirest.delete(resource)
-                .header("authkey", this.apiKey.getKey())
+                .header("authkey", apiKey.getKey())
                 .asString();
 
         Assert.assertEquals(response.getStatus(), 404, "Invalid HTTP code!");
@@ -167,13 +166,13 @@ public class CategoriesTest {
         final String resource = String.format("%s/categories/%s/subcategories/%s", GlobalSettings.SERVER, sampleCategory, subCategory);
         LOGGER.info(String.format("Deleting entire category %s and its sub categories", sampleCategory));
         HttpResponse<String> response = Unirest.delete(resource)
-                .header("authkey", this.apiKey.getKey())
+                .header("authkey", apiKey.getKey())
                 .asString();
 
         Assert.assertEquals(response.getStatus(), 204, "Invalid HTTP code!");
 
         response = Unirest.delete(resource)
-                .header("authkey", this.apiKey.getKey())
+                .header("authkey", apiKey.getKey())
                 .asString();
 
         Assert.assertEquals(response.getStatus(), 404, "Invalid HTTP code!");

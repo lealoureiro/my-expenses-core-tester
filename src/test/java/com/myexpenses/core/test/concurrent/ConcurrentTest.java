@@ -143,7 +143,7 @@ public class ConcurrentTest {
         try {
             UUID.fromString(string);
             return true;
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             return false;
         }
     }

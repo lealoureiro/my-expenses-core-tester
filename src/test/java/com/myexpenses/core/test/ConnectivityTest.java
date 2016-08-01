@@ -36,7 +36,7 @@ public final class ConnectivityTest {
         LOGGER.info(String.format("Got client ID %s", newKeyData.getClientId()));
         LOGGER.info(String.format("Got client name %s", newKeyData.getClientName()));
         LOGGER.info(String.format("Got new key %s", newKeyData.getKey()));
-        this.apiKey = newKeyData.getKey();
+        apiKey = newKeyData.getKey();
     }
 
     @Test(dependsOnMethods = {"GetKey"})
@@ -46,7 +46,7 @@ public final class ConnectivityTest {
         final String resource = String.format("%s/keys/", GlobalSettings.SERVER);
         final HttpResponse<JsonNode> response = Unirest.delete(resource)
                 .header("Accept", "application/json")
-                .header("authkey", this.apiKey)
+                .header("authkey", apiKey)
                 .asJson();
         Assert.assertEquals(response.getStatus(), 204, "Invalid HTTP code!");
     }
