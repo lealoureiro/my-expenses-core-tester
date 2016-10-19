@@ -15,6 +15,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
 import java.util.Random;
 import java.util.UUID;
 
@@ -82,7 +83,7 @@ public class TransactionsTest {
 
 
     @Test(dependsOnMethods = "GetSampleAccount")
-    public final void AddTransactions() throws Exception {
+    public final void AddTransaction() throws Exception {
         LOGGER.info("Adding transaction test...");
 
         final String description = String.format("Sample Transaction %d", Math.abs(RANDOM_GENERATOR.nextInt()));
@@ -103,6 +104,56 @@ public class TransactionsTest {
         final String transactionId = data.getObject().get("id").toString();
         Assert.assertTrue(isUUID(transactionId), "Invalid Transaction ID!");
         LOGGER.info(String.format("Transaction %s added to account %s", transactionId, sampleAccountId));
+    }
+
+    @Test
+    public final void FilterTransactionsTimeRange() throws Exception {
+
+        final SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+
+        LOGGER.info("Testing fetch transactions by range");
+        LOGGER.info("Creating new account...");
+
+        final String accountName = String.format("Sample Account %d", Math.abs(RANDOM_GENERATOR.nextInt()));
+        final Long startBalance = Math.abs(RANDOM_GENERATOR.nextLong() % 100000);
+        final Account account = new Account(accountName, "current Account", startBalance, "EUR");
+
+        String resource = String.format("%s/accounts/", GlobalSettings.SERVER);
+        HttpResponse<JsonNode> response = Unirest.post(resource)
+                .header("Accept", "application/json")
+                .header("Content-type", "application/json")
+                .header("authkey", apiKey)
+                .body(account)
+                .asJson();
+
+        Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
+
+        account.setId(response.getBody().getObject().get("id").toString());
+
+        final String description1 = String.format("Sample Transaction %d", Math.abs(RANDOM_GENERATOR.nextInt()));
+        final Long amount1 = RANDOM_GENERATOR.nextLong() % 10000;
+        final Transaction transaction1 = new Transaction(description1, "Personal", "Misc", format.parse("30-05-2016").getTime(), amount1, "single,sample");
+
+        final String description2 = String.format("Sample Transaction %d", Math.abs(RANDOM_GENERATOR.nextInt()));
+        final Long amount2 = RANDOM_GENERATOR.nextLong() % 10000;
+        final Transaction transaction2 = new Transaction(description2, "Personal", "Misc", format.parse("29-05-2016").getTime(), amount2, "single,sample");
+
+        addTransactionToAccount(transaction1, account.getId());
+        addTransactionToAccount(transaction2, account.getId());
+
+        final Transaction[] transactions = getAccountTransactions(account.getId());
+        Assert.assertEquals(transactions.length, 2, "Invalid number of transactions fetched!");
+
+        resource = String.format("%s/accounts/%s/transactions/", GlobalSettings.SERVER, account.getId());
+        final HttpResponse<Transaction[]> response2 = Unirest.get(resource)
+                .header("Accept", "application/json")
+                .header("authkey", apiKey)
+                .queryString("start", format.parse("28-05-2016").getTime())
+                .queryString("end", format.parse("30-05-2016").getTime())
+                .asObject(Transaction[].class);
+
+        Assert.assertEquals(response2.getStatus(), 200, "Invalid HTTP code!");
+        Assert.assertEquals(response2.getBody().length, 1, "Invalid number of transactions fetched!");
     }
 
     @Test(dependsOnMethods = "GetSampleAccount")
@@ -167,6 +218,23 @@ public class TransactionsTest {
 
         Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
         return response.getBody();
+    }
+
+
+    private String addTransactionToAccount(final Transaction transaction, final String accountId) throws Exception {
+
+        final String resource = String.format("%s/accounts/%s/transactions", GlobalSettings.SERVER, accountId);
+        final HttpResponse<JsonNode> response = Unirest.post(resource)
+                .header("Accept", "application/json")
+                .header("Content-type", "application/json")
+                .header("authkey", apiKey)
+                .body(transaction)
+                .asJson();
+
+        Assert.assertEquals(response.getStatus(), 200, "Invalid HTTP code!");
+
+        final JsonNode data = response.getBody();
+        return data.getObject().get("id").toString();
     }
 
     private static boolean isUUID(String string) {
