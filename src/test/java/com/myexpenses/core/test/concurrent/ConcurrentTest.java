@@ -44,13 +44,14 @@ public class ConcurrentTest {
         LOGGER.info(String.format("Account %s added with id %s", account.getName(), account.getId()));
 
         final int transactionsNumber = ThreadLocalRandom.current().nextInt(0, 100);
-        final List<Transaction> transactions = new ArrayList<Transaction>(transactionsNumber);
+        final List<Transaction> transactions = new ArrayList<>(transactionsNumber);
 
         Long total = 0L;
         for (int i = 0; i < 10000; i++) {
             final String description = String.format("Transaction %d", i);
             final Long transactionAmount = ThreadLocalRandom.current().nextLong(-10000, 10000);
-            final Transaction transaction = new Transaction(description, "Personal", "Misc", 0, transactionAmount, "single,sample");
+            final Long timestamp = 1325372400000l + ThreadLocalRandom.current().nextLong(0, 149900400000l);
+            final Transaction transaction = new Transaction(description, "Personal", "Misc", timestamp, transactionAmount, "single,sample");
             total += transaction.getAmount();
             transactions.add(transaction);
         }
@@ -61,7 +62,6 @@ public class ConcurrentTest {
         account.setBalance(total);
 
         for (final Transaction transaction : transactions) {
-            transaction.setTimestamp(System.currentTimeMillis());
             addTransaction(transaction, account.getId(), key);
             Thread.sleep(ThreadLocalRandom.current().nextLong(50, 250));
         }
