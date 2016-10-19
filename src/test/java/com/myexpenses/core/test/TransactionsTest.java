@@ -154,6 +154,7 @@ public class TransactionsTest {
 
         Assert.assertEquals(response2.getStatus(), 200, "Invalid HTTP code!");
         Assert.assertEquals(response2.getBody().length, 1, "Invalid number of transactions fetched!");
+        Assert.assertEquals(response2.getBody()[0].getDescription(), transaction2.getDescription(), "Invalid transaction fetched!");
     }
 
     @Test(dependsOnMethods = "GetSampleAccount")
