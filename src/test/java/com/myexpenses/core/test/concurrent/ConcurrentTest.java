@@ -47,10 +47,10 @@ public class ConcurrentTest {
         final List<Transaction> transactions = new ArrayList<>(transactionsNumber);
 
         Long total = 0L;
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 2500; i++) {
             final String description = String.format("Transaction %d", i);
             final Long transactionAmount = ThreadLocalRandom.current().nextLong(-10000, 10000);
-            final Long timestamp = 1325372400000l + ThreadLocalRandom.current().nextLong(0, 149900400000l);
+            final Long timestamp = 1325372400000L + ThreadLocalRandom.current().nextLong(0, 149900400000L);
             final Transaction transaction = new Transaction(description, "Personal", "Misc", timestamp, transactionAmount, "single,sample");
             total += transaction.getAmount();
             transactions.add(transaction);
@@ -63,7 +63,6 @@ public class ConcurrentTest {
 
         for (final Transaction transaction : transactions) {
             addTransaction(transaction, account.getId(), key);
-            Thread.sleep(ThreadLocalRandom.current().nextLong(50, 250));
         }
 
         final Account resultAccount = getAccountInformation(account.getId(), key);
