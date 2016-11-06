@@ -89,7 +89,6 @@ public class ConcurrentTest {
         return newKeyData.getKey();
     }
 
-
     private String addAccount(final Account account, final String key) throws Exception {
 
         final String resource = String.format("%s/accounts/", GlobalSettings.SERVER);
