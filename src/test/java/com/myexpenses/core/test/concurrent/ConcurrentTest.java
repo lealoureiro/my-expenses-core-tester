@@ -14,6 +14,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -46,11 +47,14 @@ public class ConcurrentTest {
         final int transactionsNumber = ThreadLocalRandom.current().nextInt(0, 100);
         final List<Transaction> transactions = new ArrayList<>(transactionsNumber);
 
+        final Long currentTimestamp = new Date().getTime();
+        final Long firstDay2012 = 1325372400000L;
+        final Long timeInterval = currentTimestamp - firstDay2012;
         Long total = 0L;
         for (int i = 0; i < 2500; i++) {
             final String description = String.format("Transaction %d", i);
             final Long transactionAmount = ThreadLocalRandom.current().nextLong(-10000, 10000);
-            final Long timestamp = 1325372400000L + ThreadLocalRandom.current().nextLong(0, 149900400000L);
+            final Long timestamp = firstDay2012 + ThreadLocalRandom.current().nextLong(0, timeInterval);
             final Transaction transaction = new Transaction(description, "Personal", "Misc", timestamp, transactionAmount, "single,sample");
             total += transaction.getAmount();
             transactions.add(transaction);
