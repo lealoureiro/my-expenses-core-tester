@@ -39,7 +39,6 @@ public class TransactionsTest {
         apiKey = TestUtils.getNewKey(credentials).getKey();
     }
 
-
     @Test
     public final void GetSampleAccount() throws Exception {
         LOGGER.info("Getting sample account...");
@@ -148,13 +147,13 @@ public class TransactionsTest {
         final HttpResponse<Transaction[]> response2 = Unirest.get(resource)
                 .header("Accept", "application/json")
                 .header("authkey", apiKey)
-                .queryString("start", format.parse("28-05-2016").getTime())
-                .queryString("end", format.parse("30-05-2016").getTime())
+                .queryString("start", format.parse("30-05-2016").getTime())
+                .queryString("end", format.parse("31-05-2016").getTime())
                 .asObject(Transaction[].class);
 
         Assert.assertEquals(response2.getStatus(), 200, "Invalid HTTP code!");
         Assert.assertEquals(response2.getBody().length, 1, "Invalid number of transactions fetched!");
-        Assert.assertEquals(response2.getBody()[0].getDescription(), transaction2.getDescription(), "Invalid transaction fetched!");
+        Assert.assertEquals(response2.getBody()[0].getDescription(), transaction1.getDescription(), "Invalid transaction fetched!");
     }
 
     @Test(dependsOnMethods = "GetSampleAccount")
