@@ -11,13 +11,12 @@ import org.testng.Assert;
 
 /**
  * @author Leandro Loureiro
- *
  */
-public class TestUtils {
+class TestUtils {
 
-    private static final Logger LOGGER = LogManager.getLogger(CategoriesTest.class);
+    private static final Logger LOGGER = LogManager.getLogger(TestUtils.class);
 
-    public static final KeyData getNewKey(final Credentials credentials) throws UnirestException {
+    static KeyData getNewKey(final Credentials credentials) throws UnirestException {
         final String resource = String.format("%s/keys/", GlobalSettings.SERVER);
         final HttpResponse<KeyData> response = Unirest.post(resource)
                 .header("Accept", "application/json")
