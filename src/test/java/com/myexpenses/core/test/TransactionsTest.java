@@ -87,7 +87,8 @@ public class TransactionsTest {
 
         final String description = String.format("Sample Transaction %d", Math.abs(RANDOM_GENERATOR.nextInt()));
         final Long amount = RANDOM_GENERATOR.nextLong() % 10000;
-        final Transaction transaction = new Transaction(description, "Personal", "Misc", System.currentTimeMillis(), amount, "single,sample");
+        final Transaction transaction = new Transaction(description, "Personal", "Misc", System.currentTimeMillis(), amount);
+        transaction.getTags().add("single");
 
         final String resource = String.format("%s/accounts/%s/transactions", GlobalSettings.SERVER, sampleAccountId);
         final HttpResponse<JsonNode> response = Unirest.post(resource)
@@ -131,11 +132,13 @@ public class TransactionsTest {
 
         final String description1 = String.format("Sample Transaction %d", Math.abs(RANDOM_GENERATOR.nextInt()));
         final Long amount1 = RANDOM_GENERATOR.nextLong() % 10000;
-        final Transaction transaction1 = new Transaction(description1, "Personal", "Misc", format.parse("30-05-2016").getTime(), amount1, "single,sample");
+        final Transaction transaction1 = new Transaction(description1, "Personal", "Misc", format.parse("30-05-2016").getTime(), amount1);
+        transaction1.getTags().add("periodic");
 
         final String description2 = String.format("Sample Transaction %d", Math.abs(RANDOM_GENERATOR.nextInt()));
         final Long amount2 = RANDOM_GENERATOR.nextLong() % 10000;
-        final Transaction transaction2 = new Transaction(description2, "Personal", "Misc", format.parse("29-05-2016").getTime(), amount2, "single,sample");
+        final Transaction transaction2 = new Transaction(description2, "Personal", "Misc", format.parse("29-05-2016").getTime(), amount2);
+        transaction2.getTags().add("sample2");
 
         addTransactionToAccount(transaction1, account.getId());
         addTransactionToAccount(transaction2, account.getId());

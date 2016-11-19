@@ -55,7 +55,8 @@ public class ConcurrentTest {
             final String description = String.format("Transaction %d", i);
             final Long transactionAmount = ThreadLocalRandom.current().nextLong(-10000, 10000);
             final Long timestamp = firstDay2012 + ThreadLocalRandom.current().nextLong(0, timeInterval);
-            final Transaction transaction = new Transaction(description, "Personal", "Misc", timestamp, transactionAmount, "single,sample");
+            final Transaction transaction = new Transaction(description, "Personal", "Misc", timestamp, transactionAmount);
+            transaction.getTags().add("sample tag");
             total += transaction.getAmount();
             transactions.add(transaction);
         }

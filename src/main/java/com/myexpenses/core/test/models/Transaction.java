@@ -1,7 +1,10 @@
 package com.myexpenses.core.test.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Created by leandro on 4/7/16.
+ * @author Leandro Loureiro
  */
 public class Transaction {
 
@@ -12,19 +15,19 @@ public class Transaction {
     private long timestamp;
     private Long amount;
     private String externalReference;
-    private String tags;
+    private List<String> tags;
 
     public Transaction() {
 
     }
 
-    public Transaction(final String description, final String category, final String subCategory, final long timestamp, final Long amount, final String tags) {
+    public Transaction(final String description, final String category, final String subCategory, final long timestamp, final Long amount) {
         this.description = description;
         this.category = category;
         this.subCategory = subCategory;
         this.timestamp = timestamp;
         this.amount = amount;
-        this.tags = tags;
+        this.tags = new ArrayList<>();
     }
 
     public String getId() {
@@ -83,11 +86,11 @@ public class Transaction {
         this.externalReference = externalReference;
     }
 
-    public String getTags() {
+    public List<String> getTags() {
         return tags;
     }
 
-    public void setTags(final String tags) {
+    public void setTags(final List<String> tags) {
         this.tags = tags;
     }
 }
