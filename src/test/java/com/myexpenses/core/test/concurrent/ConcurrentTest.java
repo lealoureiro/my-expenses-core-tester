@@ -50,8 +50,10 @@ public class ConcurrentTest {
         final Long currentTimestamp = new Date().getTime();
         final Long firstDay2012 = 1325372400000L;
         final Long timeInterval = currentTimestamp - firstDay2012;
+
+        final long numberTransactions = ThreadLocalRandom.current().nextLong(0, 1000);
         Long total = 0L;
-        for (int i = 0; i < 2500; i++) {
+        for (int i = 0; i < numberTransactions; i++) {
             final String description = String.format("Transaction %d", i);
             final Long transactionAmount = ThreadLocalRandom.current().nextLong(-10000, 10000);
             final Long timestamp = firstDay2012 + ThreadLocalRandom.current().nextLong(0, timeInterval);

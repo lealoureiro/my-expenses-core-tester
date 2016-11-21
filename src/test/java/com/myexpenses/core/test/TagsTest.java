@@ -39,7 +39,6 @@ public class TagsTest {
 
         final Tag[] tags = getCurrentTags();
         LOGGER.info(String.format("Fetched %d tags", tags.length));
-
     }
 
     @Test
