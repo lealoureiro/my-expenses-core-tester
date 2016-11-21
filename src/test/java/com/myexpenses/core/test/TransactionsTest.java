@@ -104,6 +104,13 @@ public class TransactionsTest {
         final String transactionId = data.getObject().get("id").toString();
         Assert.assertTrue(isUUID(transactionId), "Invalid Transaction ID!");
         LOGGER.info(String.format("Transaction %s added to account %s", transactionId, sampleAccountId));
+
+        final Transaction[] transactions = getAccountTransactions(sampleAccountId);
+        Assert.assertTrue(transactions.length > 0, "Transaction not stored!");
+        Assert.assertEquals(transactions[0].getDescription(), description, "Invalid description stored!");
+        Assert.assertEquals(transactions[0].getAmount(), amount, "Invalid amount stored!");
+        Assert.assertTrue(transactions[0].getTags().size() > 0, "Not tags stored with transaction!");
+        Assert.assertEquals(transactions[0].getTags().get(0), "single", "Invalid tag stored!");
     }
 
     @Test
